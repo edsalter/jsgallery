@@ -49,12 +49,10 @@
 
 	var thumbnailCollection = new ThumbnailCollection([
 		{
-			myid: 1,
 			title: 'Diamond',
 			src: 'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Diamond%20Heart.gif',
 		},
 		{
-			myid:2,
 			title: 'Ruby',
 			src: 'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Ruby%20Heart.gif',
 		}
@@ -79,13 +77,44 @@
 	var LargeImage = Backbone.Model.extend({
 		defaults:{
 			title:'',
-			current:false,
-			src:''//,
-			//order: LargeImages.nextOrder()
+			active:false,
+			src:'',
+			externalOrder: 0,
+			isLoaded:false
+		}
+
+
+	});
+
+	/***************
+	* MODEL VIEW
+	***************/
+	var LargeImageView = Backbone.View.extend({
+		tagName: 'span',
+		className: 'show',
+		template: template('largeImageTemplate'),
+
+		events: {
+			"click img": "next",
+			"mouseover img": "showInfo"
 		},
 
-		test:function(){
-			console.log("test");
+		render: function() {
+			this.$el.html( this.template(this.model.toJSON()) );
+			return this;
+		},
+
+
+
+		showInfo: function(){
+			//console.log("show info")
+			//show image info if available and turned on
+		},
+
+		next:function(){
+			console.log("next")
+			//this.model.attributes.active = true;
+			//this.$el.toggle();
 		}
 	});
 
@@ -95,90 +124,87 @@
 	var LargeImageCollection = Backbone.Collection.extend({
 		model: LargeImage,
 
-		next: function(){
-			console.log("next");
+		initialize: function(){
+			//this.listenTo(this.model, 'change', this.$el.toggle() );
+		this.on('change:active', this.toggle, this );
+			
 		},
 
-		previous: function(){
-			console.log("previous");
+		toggle:function(){
+			console.log('toggle');
+			console.log(this);
+			//this.$el.toggle();
 		}
+	});
+	
+	/***************
+	* COLLECTION VIEW
+	***************/
+	var CollectionLargeImageView = Backbone.View.extend({
+		tagName: 'div',
+		position:0,
+
+		render: function() {
+			var largeImageView = new LargeImageView({ 
+				model: this.collection.models[this.position]
+			});
+
+			this.$el.append(largeImageView.render().el);
+
+			return this;
+		},
+
+		events: {
+			"click img": "next"
+		},
+
+		next: function(){
+			if(!this.isLast(this.position)){
+				//this.position++;
+				this.render();
+			}
+			else{
+				//this.position=0;
+				console.log(this.collection.models[0]);
+				//this.collection.models[0].attributes.active = true;
+			}
+			
+
+		},
+
+		isLast:function(position){
+			return position == this.collection.length - 1;
+		},
+
+		isFirst: function(position){
+			return position == 0
+		}
+
 	});
 
 	var imageCollection = new LargeImageCollection([
 		{
-			myid: 1,
+			externalOrder: 0,
 			title: 'Diamond',
 			src: 'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Diamond%20Heart.gif',
 		},
 		{
-			myid:2,
+			externalOrder: 1,
 			title: 'Ruby',
 			src: 'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Ruby%20Heart.gif',
 		}
 	]);	
 
-	//LargeImages = new LargeImageCollection;
 
-	/***************
-	* COLLECTION VIEW
-	***************/
-	var MultiLargeImageView = Backbone.View.extend({
-		tagName: 'div',
+	var multiLargeImageView = new CollectionLargeImageView({ collection: imageCollection});
 
-		render: function() {
-			this.collection.each(function(largeImage) {
-				var largeImageView = new LargeImageView({ model: largeImage });
-				this.$el.append(largeImageView.render().el);
-			}, this);
+	//to enable sorting
+	multiLargeImageView.comparator = function(image) {
+		return image.get("externalOrder");
+	};
 
-			return this;
-		},
 
-		position: function(){
-			
-		},
-
-		lastImage: function(){
-
-		},
-
-		changeCollection: function(){
-
-		}
-	});
-
-	/***************
-	* MODEL VIEW
-	***************/
-	var LargeImageView = Backbone.View.extend({
-		tagName: 'span',
-		template: template('largeImageTemplate'),
-
-		render: function() {
-			this.$el.html( this.template(this.model.toJSON()) );
-			return this;
-		},
-
-		events: {
-			"click img": "next",
-			"mouseover img": "showInfo"
-		},
-
-		next: function(){
-			console.log("next");
-		},
-
-		previous: function(){
-			console.log("previous");
-		},
-
-		showInfo: function(){
-			console.log("show info")
-			//show image info if available and turned on
-		}
-	});
-
-	var largeImageView = new MultiLargeImageView({ collection: imageCollection});
+	
 
 	/***************
 	* APP VIEW
@@ -198,12 +224,12 @@
 
 		keyActions: function(e){
 			switch(e.keyCode){
-				case 39:
-					//left
+				//left
+				case 39:					
 					imageCollection.model.next();
 					break;
-				case 37:
-					//right
+				//right
+				case 37:					
 					imageCollection.previous();
 					break;
 			}
@@ -220,7 +246,7 @@
 
 	var App = new AppView;
 
-	$(document.body).append(largeImageView.render().el);
+	$(document.body).append(multiLargeImageView.render().el);
 
 //});
 
