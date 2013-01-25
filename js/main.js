@@ -4,69 +4,6 @@ $(function(){
 		return _.template( $('#' + id).html() );
 	};
 
-
-// 	// Thumbnail Model
-// 	var Thumbnail = Backbone.Model.extend({
-// 		defaults: {
-// 			title: '',
-// 			src: '',
-// 			current:false
-// 		}
-// 	});
-
-// 	// A List of thumbnails
-// 	var ThumbnailCollection = Backbone.Collection.extend({
-// 		model: Thumbnail
-// 	});
-
-
-// 	// View for all thumbnails
-// 	var MultiThumbnailView = Backbone.View.extend({
-// 		tagName: 'ul',
-
-// 		render: function() {
-// 			this.collection.each(function(thumbnail) {
-// 				var thumbnailView = new ThumbnailView({ model: thumbnail });
-// 				this.$el.append(thumbnailView.render().el);
-// 			}, this);
-
-// 			return this;
-// 		}
-// 	});
-
-
-// 	// The View for a Thumbnail
-// 	var ThumbnailView = Backbone.View.extend({
-// 		tagName: 'li',
-
-// 		template: template('thumbnailTemplate'),
-
-// 		render: function() {
-// 			this.$el.html( this.template(this.model.toJSON()) );
-// 			return this;
-// 		}
-// 	});
-
-// 	var thumbnailCollection = new ThumbnailCollection([
-// 		{
-// 			title: 'Diamond',
-// 			src: 'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Diamond%20Heart.gif',
-// 		},
-// 		{
-// 			title: 'Ruby',
-// 			src: 'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Ruby%20Heart.gif',
-// 		}
-// 	]);
-
-// 	//var thumbnailView = new MultiThumbnailView({ collection: thumbnailCollection });
-// 	//$(document.body).append(thumbnailView.render().el);
-
-
-
-
-
-
-
 	/***************
 	large image
 	***************/
@@ -76,9 +13,9 @@ $(function(){
 	***************/
 	var LargeImage = Backbone.Model.extend({
 		defaults:{
-			title:'Ruby',
+			title:'VYRE',
 			active:false,
-			src:'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Diamond%20Heart.gif',
+			src:'http://www.vyre.com/other_files/img/test-vyrelogo.png',
 			externalOrder: 0,
 			isLoaded:false
 		},
@@ -109,6 +46,10 @@ $(function(){
 	var LargeImageView = Backbone.View.extend({
 		tagName: 'li',
 
+		attributes: {
+			class: 'image',
+		},
+
 		template: template('largeImageTemplate'),
 
 		events: {
@@ -123,16 +64,9 @@ $(function(){
 	    },
 
 		render: function() {
-			//this.$el.html( this.template(this.model.toJSON()) );
-			console.log("render model view");
-			console.log(this);
-			console.log(this.$el.html(this.template(this.model.toJSON())));
 			this.$el.html(this.template(this.model.toJSON()));
-
 			return this;
 		},
-
-
 
 		showInfo: function(){
 			//console.log("show info")
@@ -149,6 +83,10 @@ $(function(){
 	    	console.log('test')
 	    }
 	});
+
+	var ImagesView = Backbone.View.extend({
+
+	});
 	
 
 
@@ -161,19 +99,20 @@ $(function(){
 			showInfo: false
 		},
 
-		el: $("#galleryApp"),
+		el: $("body"),
 
 		events: {
-			"click #add": "createOnEnter",
-			"click #destroyAll": "destroyAll"
+			"click #add": "createImage",
+			"click #destroyAll": "destroyAll",
+			"keypress": "keyActions"
 		},
 
-		initialize: function(){
-			this.listenTo(Images, 'add', this.addOne);
-			this.listenTo(Images, 'reset', this.addAll);
-			this.listenTo(Images, 'all', this.render);
+		initialize: function(){			
+			this.listenTo(Images, 'reset', this.addAll);		//on reload of page, add all (and render)		
+			this.listenTo(Images, 'add', this.addOne);			//adding an image			
+			this.listenTo(Images, 'all', this.render);			//any other event re-render
 
-			Images.fetch();
+			Images.fetch();										//gets content from storage
 		},
 
 		addImage:function(image){
@@ -187,7 +126,7 @@ $(function(){
 				case 39:					
 					//this.addImage();
 					console.log('right');
-					this.addOne();
+					this.createImage();
 					break;
 				//left
 				case 37:					
@@ -197,8 +136,10 @@ $(function(){
 		},
 
 		addOne: function(todo) {
-			console.log('added');
-			var view = new LargeImageView({model: todo});
+			var view = new LargeImageView({
+				model: todo
+			});
+
 			this.$("#images").append(view.render().el);
 		},
 
@@ -206,108 +147,21 @@ $(function(){
 			Images.each(this.addOne, this);
 		},
 
-		createOnEnter:function(e){
+		createImage:function(e){
 			Images.create({});
 		},
 
 		destroyAll: function() {
-	    	_.invoke(Images.toArray(), 'destroy');
-	      return false;
+			_.invoke(Images.toArray(), 'destroy');
+			return false;
 	    },
 
 		render: function(){
-			//console.log("render");
-		},
-
-		consoleThis:function(){
-			console.log(this);
+			
 		}
 	});
 
 	var App = new AppView;
-
-
-
-
-
-
-
-
-	// /***************
-	// * COLLECTION VIEW
-	// ***************/
-	// var CollectionLargeImageView = Backbone.View.extend({
-	// 	tagName: 'div',
-	// 	position:0,
-	// 	active:false,
-	// 	model: LargeImage,
-
-	// 	render: function() {
-	// 		var largeImageView = new LargeImageView({ 
-	// 			model: this.collection.models[this.position]
-	// 		});
-
-	// 		this.$el.append(largeImageView.render().el);
-
-	// 		return this;
-	// 	},
-
-	// 	events: {
-	// 		"click img": "next"
-	// 	},
-
-	// 	next: function(){
-	// 		if(!this.isLast(this.position)){
-	// 			//this.position++;
-	// 			this.render();
-	// 		}
-	// 		else{
-	// 			//this.position=0;
-	// 			console.log(this.collection.models[0]);
-	// 			//this.collection.models[0].attributes.active = true;
-	// 		}
-			
-
-	// 	},
-
-	// 	isLast:function(position){
-	// 		return position == this.collection.length - 1;
-	// 	},
-
-	// 	isFirst: function(position){
-	// 		return position == 0
-	// 	}
-
-	// });
-
-	// var imageCollection = new LargeImageCollection([
-	// 	{
-	// 		externalOrder: 0,
-	// 		title: 'Diamond',
-	// 		src: 'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Diamond%20Heart.gif',
-	// 	},
-	// 	{
-	// 		externalOrder: 1,
-	// 		title: 'Ruby',
-	// 		src: 'file:///Library/Application%20Support/Apple/iChat%20Icons/Gems/Ruby%20Heart.gif',
-	// 	}
-	// ]);	
-
-
-	// var multiLargeImageView = new CollectionLargeImageView({ collection: imageCollection});
-/*
-	//to enable sorting
-	multiLargeImageView.comparator = function(image) {
-		return image.get("externalOrder");
-	};
-*/
-
-	
-	//$(document.body).append(multiLargeImageView.render().el);
-
-
-
-
 
 });
 
