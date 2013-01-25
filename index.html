@@ -48,28 +48,47 @@
 
 <body>
 
-<script id="thumbnailTemplate" type="text/template">
-	<img src="<%= src %>"/>
-</script>
-
-<script id="largeImageTemplate" type="text/template">
-	<img src="<%= src %>"/>
-</script>
 
 
-	<div id="galleryApp">
 
-	</div>
 
 		
 
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+	<script src="js/jquery.js"></script>
+	<script src="js/json2.js"></script>
 
 	<script src="js/underscore.js"></script>
-	<script src="js/backbone-0-9-2.js"></script>	
+	<script src="js/backbone-0-9-1.js"></script>	
+	<script src="js/backbone-localstorage.js"></script>	
+	
 
 	<script src="js/main.js"></script>	
-             
+
+	<div id="galleryApp">
+		<input id="add" value="add" type="button" /> 
+		<input id="destroyAll" value="delete all" type="button" /> 
+
+		<ul id="images">	
+		</ul>
+	</div>	             
+
+		<script id="largeImageTemplate" type="text/template">			
+				<img src = "<%- src %>" />
+				<label><%- title %></label>			
+		</script>
+
+
+
+
+
+
+
+
+
+
+
+         
 </body>
 </html>
