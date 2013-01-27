@@ -21,7 +21,7 @@ $(function(){
 		},
 
 		toggle: function() {
-			this.save({done: !this.get("active")});
+			this.save({active: !this.get("active")});
 		}		
 	});
 
@@ -31,6 +31,7 @@ $(function(){
 	var LargeImageCollection = Backbone.Collection.extend({
 		model: LargeImage,
 		localStorage: new Backbone.LocalStorage("images-backbone"),
+		activeModel: 0,
 
 		toArray: function() {
 			//returns an array
@@ -65,6 +66,9 @@ $(function(){
 
 		render: function() {
 			this.$el.html(this.template(this.model.toJSON()));
+			if(this.model.get('active')==false ){
+				console.log('hide');
+			}
 			return this;
 		},
 
@@ -99,6 +103,8 @@ $(function(){
 			showInfo: false
 		},
 
+		
+
 		el: $("body"),
 
 		events: {
@@ -110,7 +116,7 @@ $(function(){
 		initialize: function(){			
 			this.listenTo(Images, 'reset', this.addAll);		//on reload of page, add all (and render)		
 			this.listenTo(Images, 'add', this.addOne);			//adding an image			
-			this.listenTo(Images, 'all', this.render);			//any other event re-render
+			this.listenTo(Images, 'all', this.addAll);			//any other event re-render
 
 			Images.fetch();										//gets content from storage
 		},
@@ -124,9 +130,8 @@ $(function(){
 			switch(e.keyCode){
 				//right
 				case 39:					
-					//this.addImage();
 					console.log('right');
-					this.createImage();
+					this.next();
 					break;
 				//left
 				case 37:					
@@ -140,7 +145,18 @@ $(function(){
 				model: todo
 			});
 
-			this.$("#images").append(view.render().el);
+			console.log(Images);
+
+			//only render first image
+			if(Images.activeModel == 0){
+
+				var currentImage = Images.at(Images.activeModel);
+				currentImage.set('active',true);
+
+				this.$("#images").append(view.render().el);
+				
+			}
+			Images.activeModel++;
 		},
 
 		addAll: function() {
@@ -148,12 +164,19 @@ $(function(){
 		},
 
 		createImage:function(e){
-			Images.create({});
+			Images.create({
+				title:Images.activeModel+1
+			});
 		},
 
 		destroyAll: function() {
 			_.invoke(Images.toArray(), 'destroy');
 			return false;
+	    },
+
+	    next:function(){
+	    	console.log(Images.at(Images.activeModel));
+	    	currentImage.toggle();
 	    },
 
 		render: function(){
