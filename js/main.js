@@ -97,10 +97,6 @@ $(function(){
 			//this.$el.toggle();
 		}
 	});
-
-	var ImagesView = Backbone.View.extend({
-
-	});
 	
 
 
@@ -108,12 +104,11 @@ $(function(){
 	* APP VIEW
 	***************/
 
-	var AppView = Backbone.View.extend({
+	var ImagesView = Backbone.View.extend({
 		defaults: {
-			showInfo: false
+			showInfo: false,
+			preLoad: 'all'
 		},
-
-		
 
 		el: $("body"),
 
@@ -169,7 +164,13 @@ $(function(){
 
 		addAll: function() {
 			console.log(Images);
-			Images.each(this.addOne, this);
+			console.log(this);
+
+			if(this.defaults.preLoad=='all'){
+				Images.each(this.addOne, this);
+			}
+			//will have lazy load options here
+			
 		},
 
 		createImage:function(e){
@@ -233,7 +234,7 @@ $(function(){
 		}
 	});
 
-	var App = new AppView;
+	var App = new ImagesView;
 
 });
 
