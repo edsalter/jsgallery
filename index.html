@@ -8,6 +8,10 @@
 		.hide{
 			display: none;
 		}
+
+		.active{
+			background-color: red;
+		}
 	</style>
 
 
@@ -51,7 +55,10 @@
 
 
 
-
+		<script id="largeImageTemplate" type="text/template">			
+				<img src = "<%- src %>" />
+				<label><%- title %></label>			
+		</script>
 		
 
 
@@ -67,6 +74,11 @@
 	<script src="js/main.js"></script>	
 
 	<div id="galleryApp">
+		<input id="previous" value="previous" type="button" /> 
+		<input id="next" value="next" type="button" /> 
+
+		<br />
+
 		<input id="add" value="add" type="button" /> 
 		<input id="destroyAll" value="delete all" type="button" /> 
 
@@ -74,10 +86,7 @@
 		</ul>
 	</div>	             
 
-		<script id="largeImageTemplate" type="text/template">			
-				<img src = "<%- src %>" />
-				<label><%- title %></label>			
-		</script>
+
 
 
 

@@ -17,11 +17,13 @@ $(function(){
 			active:false,
 			src:'http://www.vyre.com/other_files/img/test-vyrelogo.png',
 			externalOrder: 0,
-			isLoaded:false
+			isLoaded:false,
+			activeClass:'nonActive',
+
 		},
 
 		toggle: function() {
-			this.save({active: !this.get("active")});
+			this.set({active: !this.get("active")});
 		}		
 	});
 
@@ -32,6 +34,11 @@ $(function(){
 		model: LargeImage,
 		localStorage: new Backbone.LocalStorage("images-backbone"),
 		activeModel: 0,
+
+		getActiveModel: function(){
+			return this.activeModel;
+		},
+		
 
 		toArray: function() {
 			//returns an array
@@ -65,10 +72,17 @@ $(function(){
 	    },
 
 		render: function() {
+			console.log('render:'+this.model.id);
 			this.$el.html(this.template(this.model.toJSON()));
-			if(this.model.get('active')==false ){
-				console.log('hide');
+
+			if(this.model.get('active')==true ){
+				this.$el.removeClass('hide');
+				this.$el.addClass('active');
+			}else{
+				this.$el.removeClass('active');
+				this.$el.addClass('hide');
 			}
+
 			return this;
 		},
 
@@ -81,11 +95,7 @@ $(function(){
 			console.log("next")
 			//this.model.attributes.active = true;
 			//this.$el.toggle();
-		},
-
-	    test:function(){
-	    	console.log('test')
-	    }
+		}
 	});
 
 	var ImagesView = Backbone.View.extend({
@@ -110,13 +120,16 @@ $(function(){
 		events: {
 			"click #add": "createImage",
 			"click #destroyAll": "destroyAll",
-			"keypress": "keyActions"
+			"keypress": "keyActions",
+			"click #next":"next",
+			"click #previous":"previous"
+
 		},
 
 		initialize: function(){			
 			this.listenTo(Images, 'reset', this.addAll);		//on reload of page, add all (and render)		
 			this.listenTo(Images, 'add', this.addOne);			//adding an image			
-			this.listenTo(Images, 'all', this.addAll);			//any other event re-render
+			this.listenTo(Images, 'all', this.render);			//any other event re-render
 
 			Images.fetch();										//gets content from storage
 		},
@@ -135,49 +148,85 @@ $(function(){
 					break;
 				//left
 				case 37:					
-					imageCollection.previous();
+					this.previous();
 					break;
 			}
 		},
 
-		addOne: function(todo) {
+		addOne: function(image) {
 			var view = new LargeImageView({
-				model: todo
+				model: image
 			});
 
-			console.log(Images);
-
-			//only render first image
-			if(Images.activeModel == 0){
-
+			//set active only for first image		
+			if(Images.length == 1){
 				var currentImage = Images.at(Images.activeModel);
-				currentImage.set('active',true);
-
-				this.$("#images").append(view.render().el);
-				
+				currentImage.save('active',true);
 			}
-			Images.activeModel++;
+			
+			this.$("#images").append(view.render().el);
 		},
 
 		addAll: function() {
+			console.log(Images);
 			Images.each(this.addOne, this);
 		},
 
 		createImage:function(e){
 			Images.create({
-				title:Images.activeModel+1
+				title:Images.length
 			});
 		},
 
 		destroyAll: function() {
 			_.invoke(Images.toArray(), 'destroy');
+			Images.activeModel=0;						//reset to zero
 			return false;
 	    },
 
 	    next:function(){
-	    	console.log(Images.at(Images.activeModel));
-	    	currentImage.toggle();
+	    	console.log(Images.activeModel);
+
+			var currentImage = Images.at(Images.activeModel);
+			currentImage.set('active',false);
+
+			//go to next image
+			if(Images.activeModel < Images.length-1){
+				var nextImage = Images.at(Images.activeModel+1);
+				nextImage.toggle();
+
+				Images.activeModel++;
+			} 
+			//reached end so go back to the start
+			else {
+				var nextImage = Images.at(0);
+				nextImage.toggle();
+
+				Images.activeModel=0;
+			}			
 	    },
+
+	    previous:function(){
+	    	console.log(Images.activeModel);
+
+			var currentImage = Images.at(Images.activeModel);
+			currentImage.set('active',false);
+
+			//go to previous image
+			if(Images.activeModel > 0){
+				var nextImage = Images.at(Images.activeModel-1);
+				nextImage.toggle();
+
+				Images.activeModel--;
+			} 
+			//reached start so go to end
+			else {
+				var nextImage = Images.at(Images.length-1);
+				nextImage.toggle();
+
+				Images.activeModel = Images.length-1;
+			}			
+	    },	    
 
 		render: function(){
 			
