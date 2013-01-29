@@ -11,15 +11,12 @@ $(function(){
 	/***************
 	* MODEL
 	***************/
-	var LargeImage = Backbone.Model.extend({
+	var Image = Backbone.Model.extend({
 		defaults:{
 			title:'VYRE',
 			active:false,
 			src:'http://www.vyre.com/other_files/img/test-vyrelogo.png',
-			externalOrder: 0,
-			isLoaded:false,
-			activeClass:'nonActive',
-
+			externalOrder: 0
 		},
 
 		toggle: function() {
@@ -30,8 +27,8 @@ $(function(){
 	/***************
 	* COLLECTION
 	***************/
-	var LargeImageCollection = Backbone.Collection.extend({
-		model: LargeImage,
+	var ImageCollection = Backbone.Collection.extend({
+		model: Image,
 		localStorage: new Backbone.LocalStorage("images-backbone"),
 		activeModel: 0,
 
@@ -46,17 +43,21 @@ $(function(){
     	}
 	});
 
-	var Images = new LargeImageCollection;
+	var Images = new ImageCollection;
+
+	var ThumbnailImageCollection = ImageCollection.extend({
+
+	});
+
+	var Thumbnails = new ThumbnailImageCollection;
+
+	console.log(Thumbnails)
 
 	/***************
 	* MODEL VIEW
 	***************/
 	var LargeImageView = Backbone.View.extend({
 		tagName: 'li',
-
-		attributes: {
-			class: 'image',
-		},
 
 		template: template('largeImageTemplate'),
 
@@ -72,7 +73,7 @@ $(function(){
 	    },
 
 		render: function() {
-			console.log('render:'+this.model.id);
+			//console.log('render:'+this.model.id);
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
