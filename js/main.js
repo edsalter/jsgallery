@@ -43,7 +43,7 @@ $(function(){
     	}
 	});
 
-	var Images = new ImageCollection;
+	
 
 	var ThumbnailImageCollection = ImageCollection.extend({
 
@@ -99,7 +99,7 @@ $(function(){
 		}
 	});
 	
-
+	var Images = new ImageCollection;
 
 	/***************
 	* APP VIEW
@@ -113,6 +113,8 @@ $(function(){
 
 		el: $("body"),
 
+		collection: Images,
+
 		events: {
 			"click #add": "createImage",
 			"click #destroyAll": "destroyAll",
@@ -123,11 +125,11 @@ $(function(){
 		},
 
 		initialize: function(){			
-			this.listenTo(Images, 'reset', this.addAll);		//on reload of page, add all (and render)		
-			this.listenTo(Images, 'add', this.addOne);			//adding an image			
-			this.listenTo(Images, 'all', this.render);			//any other event re-render
+			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
+			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
+			this.listenTo(this.collection, 'all', this.render);			//any other event re-render
 
-			Images.fetch();										//gets content from storage
+			this.collection.fetch();										//gets content from storage
 		},
 
 		addImage:function(image){
@@ -155,8 +157,8 @@ $(function(){
 			});
 
 			//set active only for first image		
-			if(Images.length == 1){
-				var currentImage = Images.at(Images.activeModel);
+			if(this.collection.length == 1){
+				var currentImage = this.collection.at(this.collection.activeModel);
 				currentImage.save('active',true);
 			}
 			
@@ -164,69 +166,69 @@ $(function(){
 		},
 
 		addAll: function() {
-			console.log(Images);
+			console.log(this.collection);
 			console.log(this);
 
 			if(this.defaults.preLoad=='all'){
-				Images.each(this.addOne, this);
+				this.collection.each(this.addOne, this);
 			}
 			//will have lazy load options here
 			
 		},
 
 		createImage:function(e){
-			Images.create({
-				title:Images.length
+			this.collection.create({
+				title:this.collection.length
 			});
 		},
 
 		destroyAll: function() {
-			_.invoke(Images.toArray(), 'destroy');
-			Images.activeModel=0;						//reset to zero
+			_.invoke(this.collection.toArray(), 'destroy');
+			this.collection.activeModel=0;						//reset to zero
 			return false;
 	    },
 
 	    next:function(){
-	    	console.log(Images.activeModel);
+	    	console.log(this.collection.activeModel);
 
-			var currentImage = Images.at(Images.activeModel);
+			var currentImage = this.collection.at(this.collection.activeModel);
 			currentImage.set('active',false);
 
 			//go to next image
-			if(Images.activeModel < Images.length-1){
-				var nextImage = Images.at(Images.activeModel+1);
+			if(this.collection.activeModel < this.collection.length-1){
+				var nextImage = this.collection.at(this.collection.activeModel+1);
 				nextImage.toggle();
 
-				Images.activeModel++;
+				this.collection.activeModel++;
 			} 
 			//reached end so go back to the start
 			else {
-				var nextImage = Images.at(0);
+				var nextImage = this.collection.at(0);
 				nextImage.toggle();
 
-				Images.activeModel=0;
+				this.collection.activeModel=0;
 			}			
 	    },
 
 	    previous:function(){
-	    	console.log(Images.activeModel);
+	    	console.log(this.collection.activeModel);
 
-			var currentImage = Images.at(Images.activeModel);
+			var currentImage = this.collection.at(this.collection.activeModel);
 			currentImage.set('active',false);
 
 			//go to previous image
-			if(Images.activeModel > 0){
-				var nextImage = Images.at(Images.activeModel-1);
+			if(this.collection.activeModel > 0){
+				var nextImage = this.collection.at(this.collection.activeModel-1);
 				nextImage.toggle();
 
-				Images.activeModel--;
+				this.collection.activeModel--;
 			} 
 			//reached start so go to end
 			else {
-				var nextImage = Images.at(Images.length-1);
+				var nextImage = this.collection.at(this.collection.length-1);
 				nextImage.toggle();
 
-				Images.activeModel = Images.length-1;
+				this.collection.activeModel = this.collection.length-1;
 			}			
 	    },	    
 
@@ -235,7 +237,8 @@ $(function(){
 		}
 	});
 
-	var App = new ImagesView;
+	var ImagesViewApp = new ImagesView;
 
+	//var ThumbnailViewApp = new ImagesView;
 });
 
