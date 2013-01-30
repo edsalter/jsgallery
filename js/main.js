@@ -51,7 +51,7 @@ $(function(){
 
 	var Thumbnails = new ThumbnailImageCollection;
 
-	console.log(Thumbnails)
+	//console.log(Thumbnails)
 
 	/***************
 	* MODEL VIEW
@@ -100,6 +100,7 @@ $(function(){
 	});
 	
 	var Images = new ImageCollection;
+	var Images2 = new ImageCollection;
 
 	/***************
 	* APP VIEW
@@ -111,9 +112,7 @@ $(function(){
 			preLoad: 'all'
 		},
 
-		el: $("body"),
-
-		collection: Images,
+		el: $("#image"),
 
 		events: {
 			"click #add": "createImage",
@@ -162,10 +161,12 @@ $(function(){
 				currentImage.save('active',true);
 			}
 			
-			this.$("#images").append(view.render().el);
+			this.$el.find('#images').append(view.render().el);
+			console.log(this.$el.find('#images'));
 		},
 
 		addAll: function() {
+			console.log('add all method'+this.$el);
 			console.log(this.collection);
 			console.log(this);
 
@@ -237,7 +238,16 @@ $(function(){
 		}
 	});
 
-	var ImagesViewApp = new ImagesView;
+	var ImagesViewApp = new ImagesView({
+		collection: Images,
+		el: $("#image")
+	});
+
+	var ImagesViewApp2 = new ImagesView({
+		collection: Images2,
+		el: $("#thumbnail")
+	});	
+
 
 	//var ThumbnailViewApp = new ImagesView;
 });
