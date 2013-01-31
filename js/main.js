@@ -4,6 +4,10 @@ $(function(){
 		return _.template( $('#' + id).html() );
 	};
 
+	var APP = {};
+
+	_.extend(APP, Backbone.Events);
+
 	/***************
 	large image
 	***************/
@@ -44,7 +48,7 @@ $(function(){
 	});
 
 	
-
+/*
 	var ThumbnailImageCollection = ImageCollection.extend({
 
 	});
@@ -52,7 +56,7 @@ $(function(){
 	var Thumbnails = new ThumbnailImageCollection;
 
 	//console.log(Thumbnails)
-
+*/
 	/***************
 	* MODEL VIEW
 	***************/
@@ -73,7 +77,8 @@ $(function(){
 	    },
 
 		render: function() {
-			//console.log('render:'+this.model.id);
+			console.log('render:'+this.model.id);
+
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
@@ -98,56 +103,29 @@ $(function(){
 			//this.$el.toggle();
 		}
 	});
-	
+
+
 	var Images = new ImageCollection;
-	var Images2 = new ImageCollection;
+
 
 	/***************
-	* APP VIEW
+	* ABSTRACT IMAGES VIEW
 	***************/
 
-	var ImagesView = Backbone.View.extend({
+	var AbstractImagesView = Backbone.View.extend({
 		defaults: {
 			showInfo: false,
 			preLoad: 'all'
 		},
 
-		el: $("#image"),
-
-		events: {
-			"click #add": "createImage",
-			"click #destroyAll": "destroyAll",
-			"keypress": "keyActions",
-			"click #next":"next",
-			"click #previous":"previous"
-
-		},
+		collection: Images,
 
 		initialize: function(){			
-			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
-			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
-			this.listenTo(this.collection, 'all', this.render);			//any other event re-render
-
-			this.collection.fetch();										//gets content from storage
+										
 		},
 
 		addImage:function(image){
 			var view = new LargeImageView({model:image});
-		},
-
-
-		keyActions: function(e){
-			switch(e.keyCode){
-				//right
-				case 39:					
-					console.log('right');
-					this.next();
-					break;
-				//left
-				case 37:					
-					this.previous();
-					break;
-			}
 		},
 
 		addOne: function(image) {
@@ -208,7 +186,10 @@ $(function(){
 				nextImage.toggle();
 
 				this.collection.activeModel=0;
-			}			
+			}		
+
+			
+			APP.trigger('mycustomevent');
 	    },
 
 	    previous:function(){
@@ -234,21 +215,94 @@ $(function(){
 	    },	    
 
 		render: function(){
-			
+			console.log('calling render');
+		},	    
+
+		test: function(){
+			console.log(this.el);
+			console.log('custom events triggered');
 		}
 	});
 
-	var ImagesViewApp = new ImagesView({
+
+
+	/***************
+	* LARGE IMAGE VIEW
+	***************/
+
+	var ImagesView = AbstractImagesView.extend({
+		el: $("#image"),
+
+		events: {
+			"click #add": "createImage",
+			"click #destroyAll": "destroyAll",
+			"keypress": "keyActions",
+			"click #next":"next",
+			"click #previous":"previous"
+
+		},
+
+		initialize: function(){		
+			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
+			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
+			this.listenTo(this.collection, 'all', this.render);			//any other event re-render
+
+			//this.collection.fetch();									//gets content from storage
+
+			this.listenTo(APP, 'mycustomevent', this.test);	
+		},
+
+		keyActions: function(e){
+			switch(e.keyCode){
+				//right
+				case 39:					
+					console.log('right');
+					this.next();
+					break;
+				//left
+				case 37:					
+					this.previous();
+					break;
+			}
+		}
+	});
+
+
+	var ThumbnailsView = AbstractImagesView.extend({
+		el: $("#image"),
+
+		initialize: function(){		
+			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
+			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
+			this.listenTo(this.collection, 'all', this.render);			//any other event re-render
+
+			console.log(this.collection);
+		}
+
+	});
+	
+
+
+
+	var AppView = Backbone.View.extend({
 		collection: Images,
+
+		initialize: function(){		
+			this.collection.fetch();		//on reload of page, add all (and render)		
+			console.log(this.collection);
+		}
+	});
+
+	var imagesViewApp = new ImagesView({
 		el: $("#image")
 	});
 
-	var ImagesViewApp2 = new ImagesView({
-		collection: Images2,
+	var thumbnailsViewApp = new ThumbnailsView({
 		el: $("#thumbnail")
 	});	
 
+	var appView = new AppView;
 
-	//var ThumbnailViewApp = new ImagesView;
+
 });
 
