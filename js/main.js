@@ -20,7 +20,8 @@ $(function(){
 			title:'VYRE',
 			active:false,
 			src:'http://www.vyre.com/other_files/img/test-vyrelogo.png',
-			externalOrder: 0
+			externalOrder: 0,
+			position:0
 		},
 
 		toggle: function() {
@@ -43,20 +44,11 @@ $(function(){
 
 		toArray: function() {
 			//returns an array
-			return this.filter(function(todo){ return todo; });
+			return this.filter(function(image){ return image; });
     	}
 	});
 
 	
-/*
-	var ThumbnailImageCollection = ImageCollection.extend({
-
-	});
-
-	var Thumbnails = new ThumbnailImageCollection;
-
-	//console.log(Thumbnails)
-*/
 	/***************
 	* MODEL VIEW
 	***************/
@@ -66,7 +58,7 @@ $(function(){
 		template: template('largeImageTemplate'),
 
 		events: {
-			"click img": "next",
+			"click img": "changeImage",
 			"mouseover img": "showInfo"
 		},
 
@@ -77,16 +69,14 @@ $(function(){
 	    },
 
 		render: function() {
-			console.log('render:'+this.model.id);
+			//console.log('render:'+this.model.id);
 
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
-				this.$el.removeClass('hide');
-				this.$el.addClass('active');
+				this.$el.removeClass('hide').addClass('active');;
 			}else{
-				this.$el.removeClass('active');
-				this.$el.addClass('hide');
+				this.$el.removeClass('active').addClass('hide');
 			}
 
 			return this;
@@ -97,10 +87,10 @@ $(function(){
 			//show image info if available and turned on
 		},
 
-		next:function(){
-			console.log("next")
-			//this.model.attributes.active = true;
-			//this.$el.toggle();
+		changeImage:function(){
+			console.log("call toggle");
+			console.log(this);
+			this.model.toggle();
 		}
 	});
 
@@ -121,11 +111,7 @@ $(function(){
 		collection: Images,
 
 		initialize: function(){			
-										
-		},
-
-		addImage:function(image){
-			var view = new LargeImageView({model:image});
+							
 		},
 
 		addOne: function(image) {
@@ -140,14 +126,9 @@ $(function(){
 			}
 			
 			this.$el.find('#images').append(view.render().el);
-			console.log(this.$el.find('#images'));
 		},
 
 		addAll: function() {
-			console.log('add all method'+this.$el);
-			console.log(this.collection);
-			console.log(this);
-
 			if(this.defaults.preLoad=='all'){
 				this.collection.each(this.addOne, this);
 			}
@@ -157,7 +138,9 @@ $(function(){
 
 		createImage:function(e){
 			this.collection.create({
-				title:this.collection.length
+				//TODO put title in
+				title:this.collection.length,
+				position:this.collection.length
 			});
 		},
 
@@ -171,56 +154,49 @@ $(function(){
 	    	console.log(this.collection.activeModel);
 
 			var currentImage = this.collection.at(this.collection.activeModel);
-			currentImage.set('active',false);
 
 			//go to next image
 			if(this.collection.activeModel < this.collection.length-1){
 				var nextImage = this.collection.at(this.collection.activeModel+1);
 				nextImage.toggle();
-
-				this.collection.activeModel++;
 			} 
 			//reached end so go back to the start
 			else {
 				var nextImage = this.collection.at(0);
 				nextImage.toggle();
-
-				this.collection.activeModel=0;
 			}		
 
-			
-			APP.trigger('mycustomevent');
+			console.log(this);
 	    },
 
 	    previous:function(){
 	    	console.log(this.collection.activeModel);
 
 			var currentImage = this.collection.at(this.collection.activeModel);
-			currentImage.set('active',false);
 
 			//go to previous image
 			if(this.collection.activeModel > 0){
 				var nextImage = this.collection.at(this.collection.activeModel-1);
 				nextImage.toggle();
-
-				this.collection.activeModel--;
 			} 
 			//reached start so go to end
 			else {
 				var nextImage = this.collection.at(this.collection.length-1);
 				nextImage.toggle();
-
-				this.collection.activeModel = this.collection.length-1;
 			}			
 	    },	    
 
 		render: function(){
-			console.log('calling render');
+			//console.log('calling render');
 		},	    
 
-		test: function(){
-			console.log(this.el);
+		test: function(e, args){
+
+			
 			console.log('custom events triggered');
+			console.log(APP);
+			console.log(e);
+			console.log(args);
 		}
 	});
 
@@ -231,25 +207,24 @@ $(function(){
 	***************/
 
 	var ImagesView = AbstractImagesView.extend({
-		el: $("#image"),
-
 		events: {
 			"click #add": "createImage",
 			"click #destroyAll": "destroyAll",
 			"keypress": "keyActions",
 			"click #next":"next",
-			"click #previous":"previous"
+			"click #previous":"previous",
+			"click img":"next"
 
 		},
 
 		initialize: function(){		
 			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
 			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
-			this.listenTo(this.collection, 'all', this.render);			//any other event re-render
+			this.listenTo(this.collection, 'change:active', this.updateModels);			//any other event re-render
 
 			//this.collection.fetch();									//gets content from storage
 
-			this.listenTo(APP, 'mycustomevent', this.test);	
+			//this.listenTo(APP, 'changeImage', this.test);	
 		},
 
 		keyActions: function(e){
@@ -264,21 +239,55 @@ $(function(){
 					this.previous();
 					break;
 			}
+		},
+
+		changeImage: function(){
+			var currentImage = this.collection.at(this.collection.activeModel);
+			currentImage.set('active',false);
+			//TODO SET NEW CURRENT POSITION
+			//this.collection.activeModel--;
+			console.log('changeImage Images view');
+
+			//this.collection.set("activeModel", );
+		},
+
+		updateModels:function(){
+			console.log('updating model');
+
+			var a = this.collection.where({active: true});
+			console.log(a[0]);
+			//this.collection.activeModel = a[0].get('position');
 		}
 	});
 
+	/***************
+	* THUMBNAILS VIEW
+	***************/
 
 	var ThumbnailsView = AbstractImagesView.extend({
-		el: $("#image"),
 
 		initialize: function(){		
 			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
 			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
 			this.listenTo(this.collection, 'all', this.render);			//any other event re-render
+			this.listenTo(this.collection, 'change:active', this.changeImage)
+			
 
 			console.log(this.collection);
-		}
+		},
 
+		changeImage: function(){
+			var currentImage = this.collection.at(this.collection.activeModel);
+			currentImage.set('active',false);
+			console.log('changeImage');
+
+			var a = this.collection.where({active: true});
+			console.log(a[0]);
+
+			console.log(this.collection);
+
+			this.collection.activeModel = a[0].get('position');
+		}
 	});
 	
 
@@ -288,7 +297,7 @@ $(function(){
 		collection: Images,
 
 		initialize: function(){		
-			this.collection.fetch();		//on reload of page, add all (and render)		
+			this.collection.fetch();		//on reload of page, add all to collection, event will be picked up by views	
 			console.log(this.collection);
 		}
 	});
