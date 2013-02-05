@@ -53,18 +53,16 @@ $(function(){
 	* MODEL VIEW
 	***************/
 	var LargeImageView = Backbone.View.extend({
-		tagName: 'li',
-
 		template: template('largeImageTemplate'),
 
 		events: {
-			"click img": "changeImage",
+			"click img": "next",
 			"mouseover img": "showInfo"
 		},
 
 
 		initialize: function() {
-	    	this.listenTo(this.model, 'change', this.render);	    	
+	    	this.listenTo(this.model, 'change:active', this.render);	    	
 	    	this.listenTo(this.model, 'destroy', this.remove);
 	    },
 
@@ -79,20 +77,53 @@ $(function(){
 				this.$el.removeClass('active').addClass('hide');
 			}
 
+			console.log("render model")
+
 			return this;
 		},
 
 		showInfo: function(){
-			//console.log("show info")
-			//show image info if available and turned on
+			console.log("show info")
+		},
+
+		next:function(){
+			APP.trigger("next");
+		}
+	});
+
+	var ThumbnailImageView = Backbone.View.extend({
+		template: template('largeImageTemplate'),
+
+		events: {
+			"click img": "changeImage"
+		},
+
+
+		initialize: function() {
+	    	this.listenTo(this.model, 'change:active', this.render);	    	
+	    	this.listenTo(this.model, 'destroy', this.remove);
+	    },
+
+		render: function() {
+			//console.log('render:'+this.model.id);
+
+			this.$el.html(this.template(this.model.toJSON()));
+
+			if(this.model.get('active')==true ){
+				this.$el.removeClass('hide').addClass('active');;
+			}else{
+				this.$el.removeClass('active').addClass('hide');
+			}
+
+			console.log("render model")
+
+			return this;
 		},
 
 		changeImage:function(){
-			console.log("call toggle");
-			console.log(this);
-			this.model.toggle();
+			APP.trigger("changeImage", {"position":this.model.get('position')});
 		}
-	});
+	});	
 
 
 	var Images = new ImageCollection;
@@ -119,12 +150,6 @@ $(function(){
 				model: image
 			});
 
-			//set active only for first image		
-			if(this.collection.length == 1){
-				var currentImage = this.collection.at(this.collection.activeModel);
-				currentImage.save('active',true);
-			}
-			
 			this.$el.find('#images').append(view.render().el);
 		},
 
@@ -137,10 +162,15 @@ $(function(){
 		},
 
 		createImage:function(e){
+			//set active only for first image
+
+			var active = this.collection.length == 0?true:false;
+
 			this.collection.create({
 				//TODO put title in
 				title:this.collection.length,
-				position:this.collection.length
+				position:this.collection.length,
+				active: active
 			});
 		},
 
@@ -148,55 +178,10 @@ $(function(){
 			_.invoke(this.collection.toArray(), 'destroy');
 			this.collection.activeModel=0;						//reset to zero
 			return false;
-	    },
-
-	    next:function(){
-	    	console.log(this.collection.activeModel);
-
-			var currentImage = this.collection.at(this.collection.activeModel);
-
-			//go to next image
-			if(this.collection.activeModel < this.collection.length-1){
-				var nextImage = this.collection.at(this.collection.activeModel+1);
-				nextImage.toggle();
-			} 
-			//reached end so go back to the start
-			else {
-				var nextImage = this.collection.at(0);
-				nextImage.toggle();
-			}		
-
-			console.log(this);
-	    },
-
-	    previous:function(){
-	    	console.log(this.collection.activeModel);
-
-			var currentImage = this.collection.at(this.collection.activeModel);
-
-			//go to previous image
-			if(this.collection.activeModel > 0){
-				var nextImage = this.collection.at(this.collection.activeModel-1);
-				nextImage.toggle();
-			} 
-			//reached start so go to end
-			else {
-				var nextImage = this.collection.at(this.collection.length-1);
-				nextImage.toggle();
-			}			
-	    },	    
+	    },   
 
 		render: function(){
 			//console.log('calling render');
-		},	    
-
-		test: function(e, args){
-
-			
-			console.log('custom events triggered');
-			console.log(APP);
-			console.log(e);
-			console.log(args);
 		}
 	});
 
@@ -222,9 +207,8 @@ $(function(){
 			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
 			this.listenTo(this.collection, 'change:active', this.updateModels);			//any other event re-render
 
-			//this.collection.fetch();									//gets content from storage
-
-			//this.listenTo(APP, 'changeImage', this.test);	
+			this.listenTo(APP, 'changeImage', this.changeImage);
+			this.listenTo(APP, 'nextImage', this.next);
 		},
 
 		keyActions: function(e){
@@ -241,22 +225,52 @@ $(function(){
 			}
 		},
 
-		changeImage: function(){
-			var currentImage = this.collection.at(this.collection.activeModel);
-			currentImage.set('active',false);
-			//TODO SET NEW CURRENT POSITION
-			//this.collection.activeModel--;
-			console.log('changeImage Images view');
+		next:function(){
+	    	console.log(this.collection.activeModel);
 
-			//this.collection.set("activeModel", );
+			this.collection.at(this.collection.activeModel).set('active', false);
+
+			//go to next image
+			if(this.collection.activeModel < this.collection.length-1){
+				this.collection.at(this.collection.activeModel+1).toggle();
+				this.collection.activeModel++;
+			} 
+			//reached end so go back to the start
+			else {
+				this.collection.at(0).toggle();
+				this.collection.activeModel = 0;
+			}		
+
+			console.log(this);
+	    },
+
+	    previous:function(){
+	    	console.log(this.collection.activeModel);
+
+			this.collection.at(this.collection.activeModel).set('active', false);
+
+			//go to previous image
+			if(this.collection.activeModel > 0){
+				this.collection.at(this.collection.activeModel-1).toggle();
+				this.collection.activeModel--;
+			} 
+			//reached start so go to end
+			else {
+				this.collection.at(this.collection.length-1).toggle();
+				this.collection.activeModel = this.collection.length-1;
+			}			
+	    },			
+
+		changeImage: function(e){
+			this.collection.at(this.collection.activeModel).set('active',false);
+
+			this.collection.activeModel = e.position;
+
+			this.collection.at(this.collection.activeModel).set('active',true);
 		},
 
 		updateModels:function(){
-			console.log('updating model');
-
-			var a = this.collection.where({active: true});
-			console.log(a[0]);
-			//this.collection.activeModel = a[0].get('position');
+					
 		}
 	});
 
@@ -276,17 +290,16 @@ $(function(){
 			console.log(this.collection);
 		},
 
+		addOne: function(image) {
+			var view = new ThumbnailImageView({
+				model: image
+			});
+
+			this.$el.find('#images').append(view.render().el);
+		},
+
 		changeImage: function(){
-			var currentImage = this.collection.at(this.collection.activeModel);
-			currentImage.set('active',false);
-			console.log('changeImage');
-
-			var a = this.collection.where({active: true});
-			console.log(a[0]);
-
-			console.log(this.collection);
-
-			this.collection.activeModel = a[0].get('position');
+						
 		}
 	});
 	
