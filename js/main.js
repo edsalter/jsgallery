@@ -1,10 +1,11 @@
+//define global variable to allow external sources to call events
+var APP = {};
+
 $(function(){
 
 	var template = function(id) {
 		return _.template( $('#' + id).html() );
-	};
-
-	var APP = {};
+	};	
 
 	_.extend(APP, Backbone.Events);
 
@@ -77,8 +78,6 @@ $(function(){
 				this.$el.removeClass('active').addClass('hide');
 			}
 
-			console.log("render model")
-
 			return this;
 		},
 
@@ -105,8 +104,6 @@ $(function(){
 	    },
 
 		render: function() {
-			//console.log('render:'+this.model.id);
-
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
@@ -115,11 +112,10 @@ $(function(){
 				this.$el.removeClass('active').addClass('hide');
 			}
 
-			console.log("render model")
-
 			return this;
 		},
 
+		//trigger and event and send the id of the item that was clicked
 		changeImage:function(){
 			APP.trigger("changeImage", {"position":this.model.get('position')});
 		}
@@ -163,14 +159,17 @@ $(function(){
 
 		createImage:function(e){
 			//set active only for first image
+			var activeState = this.collection.length == 0?true:false;
 
-			var active = this.collection.length == 0?true:false;
+			var title = this.$el.find("#title").val();
+			var url = this.$el.find("#url").val();
 
 			this.collection.create({
 				//TODO put title in
-				title:this.collection.length,
+				title:this.collection.length + title,
 				position:this.collection.length,
-				active: active
+				active: activeState,
+				src:url
 			});
 		},
 
@@ -195,11 +194,8 @@ $(function(){
 		events: {
 			"click #add": "createImage",
 			"click #destroyAll": "destroyAll",
-			"keypress": "keyActions",
 			"click #next":"next",
-			"click #previous":"previous",
-			"click img":"next"
-
+			"click #previous":"previous"
 		},
 
 		initialize: function(){		
@@ -208,22 +204,10 @@ $(function(){
 			this.listenTo(this.collection, 'change:active', this.updateModels);			//any other event re-render
 
 			this.listenTo(APP, 'changeImage', this.changeImage);
-			this.listenTo(APP, 'nextImage', this.next);
+			this.listenTo(APP, 'next', this.next);
+			this.listenTo(APP, 'previous', this.previous);
 		},
 
-		keyActions: function(e){
-			switch(e.keyCode){
-				//right
-				case 39:					
-					console.log('right');
-					this.next();
-					break;
-				//left
-				case 37:					
-					this.previous();
-					break;
-			}
-		},
 
 		next:function(){
 	    	console.log(this.collection.activeModel);
@@ -283,9 +267,7 @@ $(function(){
 		initialize: function(){		
 			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
 			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
-			this.listenTo(this.collection, 'all', this.render);			//any other event re-render
-			this.listenTo(this.collection, 'change:active', this.changeImage)
-			
+			this.listenTo(this.collection, 'all', this.render);			//any other event re-render			
 
 			console.log(this.collection);
 		},
@@ -296,10 +278,6 @@ $(function(){
 			});
 
 			this.$el.find('#images').append(view.render().el);
-		},
-
-		changeImage: function(){
-						
 		}
 	});
 	
@@ -307,12 +285,34 @@ $(function(){
 
 
 	var AppView = Backbone.View.extend({
+		el: $("body"),
+
 		collection: Images,
+
+		events: {
+			"keypress": "keyActions"
+		},
 
 		initialize: function(){		
 			this.collection.fetch();		//on reload of page, add all to collection, event will be picked up by views	
 			console.log(this.collection);
+
+		},
+
+		keyActions: function(e){
+			switch(e.keyCode){
+				//right
+				case 39:					
+					APP.trigger("next");
+					break;
+				//left
+				case 37:					
+					APP.trigger("previous");
+					break;
+			}
 		}
+
+
 	});
 
 	var imagesViewApp = new ImagesView({
