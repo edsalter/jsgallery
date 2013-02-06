@@ -51,14 +51,17 @@ $(function(){
 
 	
 	/***************
-	* MODEL VIEW
+	* LARGE INDIVIDUAL VIEW
 	***************/
 	var LargeImageView = Backbone.View.extend({
+		tagName:  "li",
+
 		template: template('largeImageTemplate'),
 
 		events: {
 			"click img": "next",
-			"mouseover img": "showInfo"
+			"mouseover img": "mouseover",
+			"mouseout img": "mouseout"
 		},
 
 
@@ -73,16 +76,22 @@ $(function(){
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
-				this.$el.removeClass('hide').addClass('active');;
+				//this.$el.toggle();
+				this.$el.fadeIn(500);
 			}else{
-				this.$el.removeClass('active').addClass('hide');
+				this.$el.fadeOut(500);
+				//this.$el.removeClass('active').addClass('hide');
 			}
 
 			return this;
 		},
 
-		showInfo: function(){
-			console.log("show info")
+		mouseover: function(e){
+			this.$el.find("label").toggle();
+		},
+
+		mouseout: function(e){
+			this.$el.find("label").toggle();
 		},
 
 		next:function(){
@@ -90,8 +99,13 @@ $(function(){
 		}
 	});
 
+	/***************
+	* THUMBNAIL INDIVIDUAL VIEW
+	***************/
 	var ThumbnailImageView = Backbone.View.extend({
-		template: template('largeImageTemplate'),
+		tagName:  "li",
+
+		template: template('thumbnailTemplate'),
 
 		events: {
 			"click img": "changeImage"
@@ -107,9 +121,9 @@ $(function(){
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
-				this.$el.removeClass('hide').addClass('active');;
+				this.$el.addClass('active');;
 			}else{
-				this.$el.removeClass('active').addClass('hide');
+				this.$el.removeClass('active');
 			}
 
 			return this;
@@ -187,10 +201,12 @@ $(function(){
 
 
 	/***************
-	* LARGE IMAGE VIEW
+	* LARGE IMAGE COLLECTION VIEW
 	***************/
 
 	var ImagesView = AbstractImagesView.extend({
+		
+
 		events: {
 			"click #add": "createImage",
 			"click #destroyAll": "destroyAll",
@@ -259,7 +275,7 @@ $(function(){
 	});
 
 	/***************
-	* THUMBNAILS VIEW
+	* THUMBNAILS COLLECTION VIEW
 	***************/
 
 	var ThumbnailsView = AbstractImagesView.extend({
