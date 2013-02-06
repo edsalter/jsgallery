@@ -59,7 +59,7 @@ $(function(){
 		template: template('largeImageTemplate'),
 
 		events: {
-			"click img": "next",
+			"click img": "onclick",
 			"mouseover img": "mouseover",
 			"mouseout img": "mouseout"
 		},
@@ -76,11 +76,9 @@ $(function(){
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
-				//this.$el.toggle();
 				this.$el.fadeIn(500);
 			}else{
 				this.$el.fadeOut(500);
-				//this.$el.removeClass('active').addClass('hide');
 			}
 
 			return this;
@@ -94,7 +92,7 @@ $(function(){
 			this.$el.find("label").toggle();
 		},
 
-		next:function(){
+		onclick:function(){
 			APP.trigger("next");
 		}
 	});
@@ -262,11 +260,14 @@ $(function(){
 	    },			
 
 		changeImage: function(e){
-			this.collection.at(this.collection.activeModel).set('active',false);
+			if(e.position < collection.length){
+				this.collection.at(this.collection.activeModel).set('active',false);
 
-			this.collection.activeModel = e.position;
+				this.collection.activeModel = e.position;	//update collection pointer to one passed in
 
-			this.collection.at(this.collection.activeModel).set('active',true);
+				this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
+			}
+
 		},
 
 		updateModels:function(){
@@ -311,7 +312,7 @@ $(function(){
 
 		initialize: function(){		
 			this.collection.fetch();		//on reload of page, add all to collection, event will be picked up by views	
-			console.log(this.collection);
+			console.log(this.collection.toJSON);
 
 		},
 
@@ -343,4 +344,7 @@ $(function(){
 
 
 });
+
+
+
 
