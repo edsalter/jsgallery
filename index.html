@@ -5,59 +5,56 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 	<style type="text/css">
-		#image .hide{
+		/* LARGE IMAGE */
+
+		#image li{
 			display: none;
-			background-color: red;
 		}
 
 		#image ul{
-			border: 1px solid black;
+			
+		}
+
+		#image ul li{
+			list-style: none;
+
+			position: absolute;
+		}
+
+		#image label{
+			clear: both;
+			display: none;
+		}
+
+		/* THUMBNAIL */
+
+		#thumbnail{
+			display: block;
+			padding-top: 150px;
 		}
 
 		#thumbnail ul img{
-			width:40px;
-			height: 40px;
-		}		
+			width:60px;
+			height: 60px;
+		}	
 
-		#thumbnail .active{
-			border:1px solid red;
+		#thumbnail ul li{
+			display: inline-block;
+		}
+
+		#thumbnail li{
+			border:1px solid transparent;
+		}
+
+		#thumbnail li.active{
+			border:1px solid #eee;
+		}
+
+		img{
+			cursor: pointer;
 		}
 	</style>
 
-
-	<script type="text/javascript">
-		var gallery = {};
-
-		// $.ajax({
-		//   url: "json_response.php",
-		//   cache: false,
-		//   dataType: 'json',
-		// }).done(function( html ) {
-		//   gallery = html;
-		// });
-
-		//temp hard code info for dev
-		//gallery = {"content":[{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJT0yOixgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180334","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJT0yOixgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180334","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"540","src":"godding-web-6931.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"27","pause":"0","target":{},"modified":"1354198334","created":"1354198334","captured_on":"0","filesize":"287115","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6931.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":{},"byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTwyPSxgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180330","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTwyPSxgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180330","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"539","src":"godding-web-6836.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"26","pause":"0","target":{},"modified":"1354198330","created":"1354198330","captured_on":"0","filesize":"739828","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6836.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":{},"byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTM2MyxgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180323","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTM2MyxgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180323","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"538","src":"godding-web-6778.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"2","pause":"0","target":{},"modified":"1354198323","created":"1354198323","captured_on":"0","filesize":"521516","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6778.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":{},"byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTM3OixgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180317","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTM3OixgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180317","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"537","src":"godding-web-6761.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"25","pause":"0","target":{},"modified":"1354198317","created":"1354198317","captured_on":"0","filesize":"207600","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6761.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":{},"byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTMxOCxgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180315","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTMxOCxgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180315","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"536","src":"godding-web-6703.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"24","pause":"0","target":{},"modified":"1354198315","created":"1354198315","captured_on":"0","filesize":"396542","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6703.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":"Ed Salter","byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTI5PCxgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180311","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTI5PCxgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180311","width":"666","height":"1000"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"535","src":"godding-web-6687.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"23","pause":"0","target":{},"modified":"1354198311","created":"1354198311","captured_on":"0","filesize":"170864","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6687.jpg","width":"533","height":"800"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":"Ed Salter","byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTA2PixgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180308","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTA2PixgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180308","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"534","src":"godding-web-6475.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"22","pause":"0","target":{},"modified":"1354198308","created":"1354198308","captured_on":"0","filesize":"454874","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6475.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":{},"byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTA3OCxgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180304","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTA3OCxgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180304","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"533","src":"godding-web-6463.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"21","pause":"0","target":{},"modified":"1354198304","created":"1354198304","captured_on":"0","filesize":"553357","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6463.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":{},"byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTAxOSxgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180298","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTAxOSxgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180298","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"532","src":"godding-web-6402.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"20","pause":"0","target":{},"modified":"1354198298","created":"1354198298","captured_on":"0","filesize":"706637","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6402.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":{},"byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}},{"thumb":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTc2PSxgZmAlOTwuNjY5LTMiNzkjPjYmJjo\/MTonNyMoMScyJiMrPDs=&m=1354180290","width":"100","height":"100"},"big":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/p.php?a=cn12ZXpkbD5zb2kvJTc2PSxgZmAlOTwuNjY5MS4jNyUiPjE\/Mz4\/NSY+Mj8xMScyJiYrPCc\/Mg==&m=1354180290","width":"1000","height":"667"},"creator":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"updater":{"id":"1","username":"ed","first":{},"last":{},"display_name":{},"profile":{},"content_count":"411"},"public":{},"title":{},"caption":{},"id":"531","src":"godding-web-6376.jpg","album_id":"26","is_video":"0","tags":"nikki Nikki Gibson and Paul Weddings","link":{},"active":"1","seq":"19","pause":"0","target":{},"modified":"1354198290","created":"1354198290","captured_on":"0","filesize":"484554","original":{"url":"http:\/\/edsalter.com\/SSP_Director_1.3.5\/ssp_director\/albums\/album-26\/lg\/godding-web-6376.jpg","width":"1000","height":"667"},"focal":{"x":"50","y":"50"},"mime_type":"image\/jpeg","iptc":{"credit":{},"caption":{},"copyright":{},"title":{},"category":{},"keywords":"Nikki Gibson and Paul Weddings","byline":{},"byline_title":{},"city":{},"state":{},"country":{},"headline":{},"source":{},"contact":{}},"exif":{"make":{},"model":{},"exposure":{},"exposure_mode":{},"iso":{},"aperture":{},"focal_length":{},"flash_simple":{},"flash":{},"exposure_bias":{},"metering_mode":{},"white_balance":{},"title":{},"comment":{},"latitude":{},"longitude":{}}}]};
-			/*
-			
-			albums
-				collection of album
-
-			album				
-
-			thumbnails
-				next previous
-
-			image
-				next
-				previous
-				show details
-
-			datasource
-				http://edsalter.com/SSP_Director_1.3.5/ssp_director/index.php?/api/get_album?album_id=25		
-
-			*/
-	</script>
 </head>
 
 <body>
