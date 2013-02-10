@@ -260,13 +260,13 @@ $(function(){
 	    },			
 
 		changeImage: function(e){
-			if(e.position < collection.length){
+			//if(e.position < this.collection.length){
 				this.collection.at(this.collection.activeModel).set('active',false);
 
 				this.collection.activeModel = e.position;	//update collection pointer to one passed in
 
 				this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
-			}
+			//}
 
 		},
 
