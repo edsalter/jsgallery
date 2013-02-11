@@ -1,0 +1,20 @@
+[
+	{
+		"title":"test0",
+		"src":"http://icons.iconarchive.com/icons/harwen/pleasant/128/JPEG-Image-icon.png",
+		"active":true,
+		"position":0
+	},
+
+	{
+		"title":"test1",
+		"src":"http://icons.iconarchive.com/icons/ampeross/qetto-2/128/gallery-icon.png",
+		"position":1
+	},
+
+	{
+		"title":"test2",
+		"src":"http://icons.iconarchive.com/icons/kyo-tux/aeon/128/Misc-Home-icon.png",
+		"position":2
+	}		
+]

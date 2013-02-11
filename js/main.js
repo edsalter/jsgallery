@@ -35,7 +35,8 @@ $(function(){
 	***************/
 	var ImageCollection = Backbone.Collection.extend({
 		model: Image,
-		localStorage: new Backbone.LocalStorage("images-backbone"),
+		//localStorage: new Backbone.LocalStorage("images-backbone"),
+		url:'js/test.json',
 		activeModel: 0,
 
 		getActiveModel: function(){
@@ -76,9 +77,13 @@ $(function(){
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
-				this.$el.fadeIn(500);
+				//this.$el.fadeIn(500);
+				this.$el.show( "slide", 
+                     { direction: "left"  }, 2000 );
 			}else{
-				this.$el.fadeOut(500);
+				//this.$el.fadeOut(500);
+				this.$el.hide( "slide", 
+                     { direction: "right"  }, 2000 );
 			}
 
 			return this;
@@ -312,7 +317,7 @@ $(function(){
 
 		initialize: function(){		
 			this.collection.fetch();		//on reload of page, add all to collection, event will be picked up by views	
-			console.log(this.collection.toJSON);
+			console.log(this.collection);
 
 		},
 
