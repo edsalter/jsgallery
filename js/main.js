@@ -77,13 +77,13 @@ $(function(){
 			this.$el.html(this.template(this.model.toJSON()));
 
 			if(this.model.get('active')==true ){
-				//this.$el.fadeIn(500);
-				this.$el.show( "slide", 
-                     { direction: "left"  }, 2000 );
+				this.$el.fadeIn(1000);
+				// this.$el.show( "slide", 
+    //                  { direction: "left"  }, 3000 );
 			}else{
-				//this.$el.fadeOut(500);
-				this.$el.hide( "slide", 
-                     { direction: "right"  }, 2000 );
+				this.$el.fadeOut(1000);
+				// this.$el.hide( "slide", 
+    //                  { direction: "right"  }, 3000 );
 			}
 
 			return this;
@@ -198,7 +198,19 @@ $(function(){
 
 		render: function(){
 			//console.log('calling render');
-		}
+		},
+
+
+		changeImage: function(e){
+			//if(e.position < this.collection.length){
+				this.collection.at(this.collection.activeModel).set('active',false);
+
+				this.collection.activeModel = e.position;	//update collection pointer to one passed in
+
+				this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
+			//}
+
+		}		
 	});
 
 
@@ -231,7 +243,7 @@ $(function(){
 		next:function(){
 	    	console.log(this.collection.activeModel);
 
-			this.collection.at(this.collection.activeModel).set('active', false);
+			this.collection.at(this.collection.activeModel).toggle();
 
 			//go to next image
 			if(this.collection.activeModel < this.collection.length-1){
@@ -264,17 +276,6 @@ $(function(){
 			}			
 	    },			
 
-		changeImage: function(e){
-			//if(e.position < this.collection.length){
-				this.collection.at(this.collection.activeModel).set('active',false);
-
-				this.collection.activeModel = e.position;	//update collection pointer to one passed in
-
-				this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
-			//}
-
-		},
-
 		updateModels:function(){
 					
 		}
@@ -302,7 +303,6 @@ $(function(){
 			this.$el.find('#images').append(view.render().el);
 		}
 	});
-	
 
 
 
