@@ -5,6 +5,9 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 	<style type="text/css">
+		.hide{
+			display: none;
+		}
 		/* LARGE IMAGE */
 
 		#image li{
@@ -71,6 +74,11 @@
 			<img src = "<%- src %>" />		
 	</script>
 
+	<script id="gridTemplate" type="text/template">			
+			<img src = "<%- src %>" rel = "<%- position %>" />
+			<label><%- title %></label>			
+	</script>	
+
 
 	<script src="js/jquery.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
@@ -94,7 +102,10 @@
 		<input id="title" value="title" type="text" /> |
 
 		<input id="add" value="add" type="button" /> 
-		<input id="destroyAll" value="delete all" type="button" /> 
+		<input id="destroyAll" value="delete all" type="button" /> |
+
+		<input id="thumbnailView" value="Switch to thumbnails view" type="button" class="hide" />
+		<input id="gridView" value="Switch to grid view" type="button" />
 
 		<ul id="images" /></ul>
 
@@ -102,6 +113,10 @@
 	</div>	             
 
 	<div id="thumbnail">
+		<ul id="images"></ul>
+	</div>
+
+	<div id="grid">
 		<ul id="images"></ul>
 	</div>
 
