@@ -1,5 +1,5 @@
 //define global variable to allow external sources to call events
-var APP = {};
+var EVENTBUS = {};
 
 $(function(){
 
@@ -7,7 +7,7 @@ $(function(){
 		return _.template( $('#' + id).html() );
 	};	
 
-	_.extend(APP, Backbone.Events);
+	_.extend(EVENTBUS, Backbone.Events);
 
 	/***************
 	large image
@@ -18,9 +18,9 @@ $(function(){
 	***************/
 	var Image = Backbone.Model.extend({
 		defaults:{
-			title:'VYRE',
+			title:'My title',
 			active:false,
-			src:'http://www.vyre.com/other_files/img/test-vyrelogo.png',
+			src:'http://icons.iconarchive.com/icons/pixelpirate/futurama/128/Morbo-icon.png',
 			externalOrder: 0,
 			position:0
 		},
@@ -30,13 +30,20 @@ $(function(){
 		}		
 	});
 
+
 	/***************
 	* COLLECTION
 	***************/
 	var ImageCollection = Backbone.Collection.extend({
 		model: Image,
 		//localStorage: new Backbone.LocalStorage("images-backbone"),
-		url:'js/test.json',
+		//url:'js/test.json',
+
+		// url: function() {
+		// 	//return '/books/' + this.get("category");
+		// 	return 'js/test.json';
+		// },
+
 		activeModel: 0,
 
 		getActiveModel: function(){
@@ -50,6 +57,24 @@ $(function(){
     	}
 	});
 
+
+	var Album = Backbone.Model.extend({
+		initialize: function(){
+			this.images = new ImageCollection;
+			this.images.url = '/js/test'+id+'.json';
+			this.images.on("reset", this.render);
+		},
+
+		render: function(){
+			console("rendered album");
+		}
+
+
+	});	
+
+
+	var Images = new ImageCollection;
+	Images.url='js/test.json';
 	
 	/***************
 	* LARGE INDIVIDUAL VIEW
@@ -98,7 +123,7 @@ $(function(){
 		},
 
 		onclick:function(){
-			APP.trigger("next");
+			EVENTBUS.trigger("next");
 		}
 	});
 
@@ -134,16 +159,14 @@ $(function(){
 
 		//trigger and event and send the id of the item that was clicked
 		changeImage:function(){
-			APP.trigger("changeImage", {"position":this.model.get('position')});
+			EVENTBUS.trigger("changeImage", {"position":this.model.get('position')});
 		}
 	});	
 
 
-	var Images = new ImageCollection;
-
 
 	/***************
-	* ABSTRACT IMAGES VIEW
+	* ABSTRACT IMAGES COLLECTION VIEW
 	***************/
 
 	var AbstractImagesView = Backbone.View.extend({
@@ -183,7 +206,7 @@ $(function(){
 
 			this.collection.create({
 				//TODO put title in
-				title:this.collection.length + title,
+				title:title,
 				position:this.collection.length,
 				active: activeState,
 				src:url
@@ -198,45 +221,6 @@ $(function(){
 
 		render: function(){
 			//console.log('calling render');
-		},
-
-
-		changeImage: function(e){
-			//if(e.position < this.collection.length){
-				this.collection.at(this.collection.activeModel).set('active',false);
-
-				this.collection.activeModel = e.position;	//update collection pointer to one passed in
-
-				this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
-			//}
-
-		}		
-	});
-
-
-
-	/***************
-	* LARGE IMAGE COLLECTION VIEW
-	***************/
-
-	var ImagesView = AbstractImagesView.extend({
-		
-
-		events: {
-			"click #add": "createImage",
-			"click #destroyAll": "destroyAll",
-			"click #next":"next",
-			"click #previous":"previous"
-		},
-
-		initialize: function(){		
-			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
-			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
-			this.listenTo(this.collection, 'change:active', this.updateModels);			//any other event re-render
-
-			this.listenTo(APP, 'changeImage', this.changeImage);
-			this.listenTo(APP, 'next', this.next);
-			this.listenTo(APP, 'previous', this.previous);
 		},
 
 
@@ -274,7 +258,48 @@ $(function(){
 				this.collection.at(this.collection.length-1).toggle();
 				this.collection.activeModel = this.collection.length-1;
 			}			
-	    },			
+	    },	
+
+
+		changeImage: function(e){
+			//if(e.position < this.collection.length){
+				this.collection.at(this.collection.activeModel).set('active',false);
+
+				this.collection.activeModel = e.position;	//update collection pointer to one passed in
+
+				this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
+			//}
+
+		}		
+	});
+
+
+
+	/***************
+	* LARGE IMAGE COLLECTION VIEW
+	***************/
+
+	var ImagesView = AbstractImagesView.extend({
+		
+
+		events: {
+			"click #add": "createImage",
+			"click #destroyAll": "destroyAll",
+			"click #next":"next",
+			"click #previous":"previous"
+		},
+
+		initialize: function(){		
+			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
+			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
+			this.listenTo(this.collection, 'change:active', this.updateModels);			//any other event re-render
+
+			this.listenTo(EVENTBUS, 'changeImage', this.changeImage);
+			this.listenTo(EVENTBUS, 'next', this.next);
+			this.listenTo(EVENTBUS, 'previous', this.previous);
+
+			this.listenTo(EVENTBUS, 'destroyAll', this.destroyAll);
+		},		
 
 		updateModels:function(){
 					
@@ -304,7 +329,13 @@ $(function(){
 		}
 	});
 
+	/***************
+	* APP VIEW
+	***************/
 
+	var App = Backbone.Model.extend({
+
+	});
 
 	var AppView = Backbone.View.extend({
 		el: $("body"),
@@ -316,26 +347,59 @@ $(function(){
 		},
 
 		initialize: function(){		
+			this.collection.fetch();	
+			this.fetch();
+			this.listenTo(EVENTBUS, 'fetch', this.fetch);
+		},
+
+		fetch: function(e){
+			console.log(e);
+
+			this.collection.url='js/test.json';
 			this.collection.fetch();		//on reload of page, add all to collection, event will be picked up by views	
 			console.log(this.collection);
-
 		},
 
 		keyActions: function(e){
 			switch(e.keyCode){
 				//right
 				case 39:					
-					APP.trigger("next");
+					EVENTBUS.trigger("next");
 					break;
 				//left
 				case 37:					
-					APP.trigger("previous");
+					EVENTBUS.trigger("previous");
 					break;
 			}
 		}
 
 
 	});
+
+	var AppRouter = Backbone.Router.extend({
+		routes: {
+			"album/:id"		:"album"	//#album/1
+		},
+
+		album: function(id){
+			console.log("router");
+			console.log(id);
+
+			//EVENTBUS.trigger("destroyAll");
+/*
+			var Images = new ImageCollection;
+			Images.url='js/test2.json';
+			Images.fetch();
+*/
+		}
+	});
+
+	appRouter = new AppRouter;
+	Backbone.history.start();
+
+
+
+
 
 	var imagesViewApp = new ImagesView({
 		el: $("#image")
