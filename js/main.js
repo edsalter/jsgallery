@@ -59,22 +59,75 @@ $(function(){
 
 
 	var Album = Backbone.Model.extend({
-		initialize: function(){
-			this.images = new ImageCollection;
-			this.images.url = '/js/test'+id+'.json';
-			this.images.on("reset", this.render);
+		defaults:{
+			activeModel:0
 		},
 
-		render: function(){
-			console("rendered album");
-		}
+		initialize: function(){
+			this.images = new ImageCollection;
+			//this.images.url = 'js/test2.json'; //'/js/test'+this.id+'.json';
+
+			this.images.url = 'js/test'+this.id+'.json';
+
+			console.log("init album");
+			//this.images.on("reset", this.render);
+
+			this.listenTo(EVENTBUS, 'next', this.next);
+		},
+
+		next:function(){
+	    	console.log("this activeModel"+this.get("activeModel"));
+
+			this.images.at(this.get("activeModel")).toggle();
+
+			//go to next image
+			if(this.get("activeModel") < this.images.length-1){
+				this.images.at(this.get("activeModel")+1).toggle();
+				this.set("activeModel", this.get("activeModel")+1);
+				console.log("Agoing to next");
+			} 
+			//reached end so go back to the start
+			else {
+				this.images.at(0).toggle();
+				this.set("activeModel", 0);
+				console.log("Bgoing to first");
+			}		
+
+			console.log(this);
+	    }
+
+	 //    previous:function(){
+	 //    	console.log(this.collection.activeModel);
+
+		// 	this.collection.at(this.collection.activeModel).set('active', false);
+
+		// 	//go to previous image
+		// 	if(this.collection.activeModel > 0){
+		// 		this.collection.at(this.collection.activeModel-1).toggle();
+		// 		this.collection.activeModel--;
+		// 	} 
+		// 	//reached start so go to end
+		// 	else {
+		// 		this.collection.at(this.collection.length-1).toggle();
+		// 		this.collection.activeModel = this.collection.length-1;
+		// 	}			
+	 //    },	
+
+
+		// changeImage: function(e){
+		// 	//if(e.position < this.collection.length){
+		// 		this.collection.at(this.collection.activeModel).set('active',false);
+
+		// 		this.collection.activeModel = e.position;	//update collection pointer to one passed in
+
+		// 		this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
+		// 	//}
+
+		// }		
 
 
 	});	
 
-
-	var Images = new ImageCollection;
-	Images.url='js/test.json';
 	
 	/***************
 	* LARGE INDIVIDUAL VIEW
@@ -103,12 +156,9 @@ $(function(){
 
 			if(this.model.get('active')==true ){
 				this.$el.fadeIn(1000);
-				// this.$el.show( "slide", 
-    //                  { direction: "left"  }, 3000 );
-			}else{
+			}
+			else{
 				this.$el.fadeOut(1000);
-				// this.$el.hide( "slide", 
-    //                  { direction: "right"  }, 3000 );
 			}
 
 			return this;
@@ -175,7 +225,7 @@ $(function(){
 			preLoad: 'all'
 		},
 
-		collection: Images,
+//		collection: Images,
 
 		initialize: function(){			
 							
@@ -199,7 +249,7 @@ $(function(){
 
 		createImage:function(e){
 			//set active only for first image
-			var activeState = this.collection.length == 0?true:false;
+			//var activeState = this.collection.length == 0?true:false;
 
 			var title = this.$el.find("#title").val();
 			var url = this.$el.find("#url").val();
@@ -207,8 +257,8 @@ $(function(){
 			this.collection.create({
 				//TODO put title in
 				title:title,
-				position:this.collection.length,
-				active: activeState,
+				//position:this.collection.length,
+				//active: activeState,
 				src:url
 			});
 		},
@@ -220,57 +270,57 @@ $(function(){
 	    },   
 
 		render: function(){
-			//console.log('calling render');
-		},
+			console.log('calling render');
+		}
 
 
-		next:function(){
-	    	console.log(this.collection.activeModel);
+		// next:function(){
+	 //    	console.log(this.collection.activeModel);
 
-			this.collection.at(this.collection.activeModel).toggle();
+		// 	this.collection.at(this.collection.activeModel).toggle();
 
-			//go to next image
-			if(this.collection.activeModel < this.collection.length-1){
-				this.collection.at(this.collection.activeModel+1).toggle();
-				this.collection.activeModel++;
-			} 
-			//reached end so go back to the start
-			else {
-				this.collection.at(0).toggle();
-				this.collection.activeModel = 0;
-			}		
+		// 	//go to next image
+		// 	if(this.collection.activeModel < this.collection.length-1){
+		// 		this.collection.at(this.collection.activeModel+1).toggle();
+		// 		this.collection.activeModel++;
+		// 	} 
+		// 	//reached end so go back to the start
+		// 	else {
+		// 		this.collection.at(0).toggle();
+		// 		this.collection.activeModel = 0;
+		// 	}		
 
-			console.log(this);
-	    },
+		// 	console.log(this);
+	 //    },
 
-	    previous:function(){
-	    	console.log(this.collection.activeModel);
+	 //    previous:function(){
+	 //    	console.log(this.collection.activeModel);
 
-			this.collection.at(this.collection.activeModel).set('active', false);
+		// 	this.collection.at(this.collection.activeModel).set('active', false);
 
-			//go to previous image
-			if(this.collection.activeModel > 0){
-				this.collection.at(this.collection.activeModel-1).toggle();
-				this.collection.activeModel--;
-			} 
-			//reached start so go to end
-			else {
-				this.collection.at(this.collection.length-1).toggle();
-				this.collection.activeModel = this.collection.length-1;
-			}			
-	    },	
+		// 	//go to previous image
+		// 	if(this.collection.activeModel > 0){
+		// 		this.collection.at(this.collection.activeModel-1).toggle();
+		// 		this.collection.activeModel--;
+		// 	} 
+		// 	//reached start so go to end
+		// 	else {
+		// 		this.collection.at(this.collection.length-1).toggle();
+		// 		this.collection.activeModel = this.collection.length-1;
+		// 	}			
+	 //    },	
 
 
-		changeImage: function(e){
-			//if(e.position < this.collection.length){
-				this.collection.at(this.collection.activeModel).set('active',false);
+		// changeImage: function(e){
+		// 	//if(e.position < this.collection.length){
+		// 		this.collection.at(this.collection.activeModel).set('active',false);
 
-				this.collection.activeModel = e.position;	//update collection pointer to one passed in
+		// 		this.collection.activeModel = e.position;	//update collection pointer to one passed in
 
-				this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
-			//}
+		// 		this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
+		// 	//}
 
-		}		
+		// }		
 	});
 
 
@@ -286,24 +336,31 @@ $(function(){
 			"click #add": "createImage",
 			"click #destroyAll": "destroyAll",
 			"click #next":"next",
-			"click #previous":"previous"
+			//"click #previous":"previous"
 		},
 
 		initialize: function(){		
 			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
 			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
-			this.listenTo(this.collection, 'change:active', this.updateModels);			//any other event re-render
+			//this.listenTo(this.collection, 'change:active', this.updateModels);			//any other event re-render
 
-			this.listenTo(EVENTBUS, 'changeImage', this.changeImage);
-			this.listenTo(EVENTBUS, 'next', this.next);
-			this.listenTo(EVENTBUS, 'previous', this.previous);
+			// this.listenTo(EVENTBUS, 'changeImage', this.changeImage);
+			//this.listenTo(EVENTBUS, 'next', this.next);
+			// this.listenTo(EVENTBUS, 'previous', this.previous);
 
 			this.listenTo(EVENTBUS, 'destroyAll', this.destroyAll);
 		},		
 
 		updateModels:function(){
 					
+		},
+
+		next: function(){
+
+				console.log("going to next in view");
+				EVENTBUS.trigger("next");
 		}
+
 	});
 
 	/***************
@@ -340,24 +397,22 @@ $(function(){
 	var AppView = Backbone.View.extend({
 		el: $("body"),
 
-		collection: Images,
-
 		events: {
 			"keypress": "keyActions"
 		},
 
 		initialize: function(){		
-			this.collection.fetch();	
-			this.fetch();
+			//this.collection.fetch();	
+			// this.fetch();
 			this.listenTo(EVENTBUS, 'fetch', this.fetch);
 		},
 
 		fetch: function(e){
 			console.log(e);
 
-			this.collection.url='js/test.json';
-			this.collection.fetch();		//on reload of page, add all to collection, event will be picked up by views	
-			console.log(this.collection);
+			// this.collection.url='js/test.json';
+			// this.collection.fetch();		//on reload of page, add all to collection, event will be picked up by views	
+			// console.log(this.collection);
 		},
 
 		keyActions: function(e){
@@ -382,10 +437,31 @@ $(function(){
 		},
 
 		album: function(id){
+			EVENTBUS.trigger("destroyAll");
+
 			console.log("router");
 			console.log(id);
 
-			//EVENTBUS.trigger("destroyAll");
+			var album = new Album({
+				id: id
+			});
+
+			album.images.fetch();
+			console.log('album');
+			console.log(album);
+
+
+			var imagesViewApp = new ImagesView({
+				el: $("#image"),
+				collection: album.images
+			});
+
+			var thumbnailsViewApp = new ThumbnailsView({
+				el: $("#thumbnail"),
+				collection: album.images
+			});	
+
+			
 /*
 			var Images = new ImageCollection;
 			Images.url='js/test2.json';
@@ -398,16 +474,6 @@ $(function(){
 	Backbone.history.start();
 
 
-
-
-
-	var imagesViewApp = new ImagesView({
-		el: $("#image")
-	});
-
-	var thumbnailsViewApp = new ThumbnailsView({
-		el: $("#thumbnail")
-	});	
 
 	var appView = new AppView;
 
