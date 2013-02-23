@@ -36,13 +36,6 @@ $(function(){
 	***************/
 	var ImageCollection = Backbone.Collection.extend({
 		model: Image,
-		//localStorage: new Backbone.LocalStorage("images-backbone"),
-		//url:'js/test.json',
-
-		// url: function() {
-		// 	//return '/books/' + this.get("category");
-		// 	return 'js/test.json';
-		// },
 
 		activeModel: 0,
 
@@ -73,6 +66,7 @@ $(function(){
 			//this.images.on("reset", this.render);
 
 			this.listenTo(EVENTBUS, 'next', this.next);
+			this.listenTo(EVENTBUS, 'previous', this.previous);
 		},
 
 		next:function(){
@@ -94,25 +88,25 @@ $(function(){
 			}		
 
 			console.log(this);
+	    },
+
+
+		previous:function(){
+	    	console.log("this activeModel"+this.get("activeModel"));
+
+			this.images.at(this.get("activeModel")).toggle();
+
+			//go to next image
+			if(this.get("activeModel") > 0){
+				this.images.at(this.get("activeModel")-1).toggle();
+				this.set("activeModel", this.get("activeModel")-1);
+			} 
+			//reached end so go back to the start
+			else {
+				this.images.at(this.images.length-1).toggle();
+				this.set("activeModel", this.images.length-1);
+			}		
 	    }
-
-	 //    previous:function(){
-	 //    	console.log(this.collection.activeModel);
-
-		// 	this.collection.at(this.collection.activeModel).set('active', false);
-
-		// 	//go to previous image
-		// 	if(this.collection.activeModel > 0){
-		// 		this.collection.at(this.collection.activeModel-1).toggle();
-		// 		this.collection.activeModel--;
-		// 	} 
-		// 	//reached start so go to end
-		// 	else {
-		// 		this.collection.at(this.collection.length-1).toggle();
-		// 		this.collection.activeModel = this.collection.length-1;
-		// 	}			
-	 //    },	
-
 
 		// changeImage: function(e){
 		// 	//if(e.position < this.collection.length){
@@ -225,8 +219,6 @@ $(function(){
 			preLoad: 'all'
 		},
 
-//		collection: Images,
-
 		initialize: function(){			
 							
 		},
@@ -336,7 +328,7 @@ $(function(){
 			"click #add": "createImage",
 			"click #destroyAll": "destroyAll",
 			"click #next":"next",
-			//"click #previous":"previous"
+			"click #previous":"previous"
 		},
 
 		initialize: function(){		
@@ -356,10 +348,13 @@ $(function(){
 		},
 
 		next: function(){
+			EVENTBUS.trigger("next");
+		},
 
-				console.log("going to next in view");
-				EVENTBUS.trigger("next");
-		}
+		previous: function(){
+			EVENTBUS.trigger("previous");
+			console.log('sdf');
+		}		
 
 	});
 
