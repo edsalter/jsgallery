@@ -63,10 +63,12 @@ $(function(){
 			this.images.url = 'js/test'+this.id+'.json';
 
 			console.log("init album");
+			console.log(this.images);
 			//this.images.on("reset", this.render);
 
 			this.listenTo(EVENTBUS, 'next', this.next);
 			this.listenTo(EVENTBUS, 'previous', this.previous);
+			this.listenTo(EVENTBUS, 'changeImage', this.changeImage);
 		},
 
 		next:function(){
@@ -106,18 +108,20 @@ $(function(){
 				this.images.at(this.images.length-1).toggle();
 				this.set("activeModel", this.images.length-1);
 			}		
-	    }
+	    },
 
-		// changeImage: function(e){
-		// 	//if(e.position < this.collection.length){
-		// 		this.collection.at(this.collection.activeModel).set('active',false);
+		changeImage: function(e){
+			console.log("changeImage");
+			console.log(e.position);
+			//if(e.position < this.collection.length){
+				this.images.at(this.get("activeModel")).set('active',false);
+				
+				this.set("activeModel", e.position);	//update collection pointer to one passed in
 
-		// 		this.collection.activeModel = e.position;	//update collection pointer to one passed in
+				this.images.at(this.get("activeModel")).set('active',true);		//update to 		
+			//}
 
-		// 		this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
-		// 	//}
-
-		// }		
+		}		
 
 
 	});	
@@ -257,62 +261,14 @@ $(function(){
 
 		destroyAll: function() {
 			_.invoke(this.collection.toArray(), 'destroy');
-			this.collection.activeModel=0;						//reset to zero
+			//this.collection.activeModel=0;						//reset to zero
+			console.log('destroying colleciton');
 			return false;
 	    },   
 
 		render: function(){
 			console.log('calling render');
-		}
-
-
-		// next:function(){
-	 //    	console.log(this.collection.activeModel);
-
-		// 	this.collection.at(this.collection.activeModel).toggle();
-
-		// 	//go to next image
-		// 	if(this.collection.activeModel < this.collection.length-1){
-		// 		this.collection.at(this.collection.activeModel+1).toggle();
-		// 		this.collection.activeModel++;
-		// 	} 
-		// 	//reached end so go back to the start
-		// 	else {
-		// 		this.collection.at(0).toggle();
-		// 		this.collection.activeModel = 0;
-		// 	}		
-
-		// 	console.log(this);
-	 //    },
-
-	 //    previous:function(){
-	 //    	console.log(this.collection.activeModel);
-
-		// 	this.collection.at(this.collection.activeModel).set('active', false);
-
-		// 	//go to previous image
-		// 	if(this.collection.activeModel > 0){
-		// 		this.collection.at(this.collection.activeModel-1).toggle();
-		// 		this.collection.activeModel--;
-		// 	} 
-		// 	//reached start so go to end
-		// 	else {
-		// 		this.collection.at(this.collection.length-1).toggle();
-		// 		this.collection.activeModel = this.collection.length-1;
-		// 	}			
-	 //    },	
-
-
-		// changeImage: function(e){
-		// 	//if(e.position < this.collection.length){
-		// 		this.collection.at(this.collection.activeModel).set('active',false);
-
-		// 		this.collection.activeModel = e.position;	//update collection pointer to one passed in
-
-		// 		this.collection.at(this.collection.activeModel).set('active',true);		//update to 		
-		// 	//}
-
-		// }		
+		}	
 	});
 
 
@@ -455,13 +411,6 @@ $(function(){
 				el: $("#thumbnail"),
 				collection: album.images
 			});	
-
-			
-/*
-			var Images = new ImageCollection;
-			Images.url='js/test2.json';
-			Images.fetch();
-*/
 		}
 	});
 
