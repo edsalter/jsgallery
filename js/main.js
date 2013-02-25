@@ -1,6 +1,8 @@
 //define global variable to allow external sources to call events
 var EVENTBUS = {};
 
+
+
 $(function(){
 
 	var template = function(id) {
@@ -63,15 +65,23 @@ $(function(){
 			this.images.url = 'js/test'+this.id+'.json';
 
 			console.log("init album");
-			console.log(this.images);
+			console.log(this);
 			//this.images.on("reset", this.render);
+
+			this.images.fetch();
+			console.log("log images album");
+			console.log(this);
 
 			this.listenTo(EVENTBUS, 'next', this.next);
 			this.listenTo(EVENTBUS, 'previous', this.previous);
 			this.listenTo(EVENTBUS, 'changeImage', this.changeImage);
+			this.listenTo(EVENTBUS, 'destroy', this.remove);
 		},
 
 		next:function(){
+			console.log("log images album");
+			console.log(this);
+
 	    	console.log("this activeModel"+this.get("activeModel"));
 
 			this.images.at(this.get("activeModel")).toggle();
@@ -112,7 +122,7 @@ $(function(){
 
 		changeImage: function(e){
 			console.log("changeImage");
-			console.log(e.position);
+			console.log(this.images);
 			//if(e.position < this.collection.length){
 				this.images.at(this.get("activeModel")).set('active',false);
 				
@@ -290,11 +300,6 @@ $(function(){
 		initialize: function(){		
 			this.listenTo(this.collection, 'reset', this.addAll);		//on reload of page, add all (and render)		
 			this.listenTo(this.collection, 'add', this.addOne);			//adding an image			
-			//this.listenTo(this.collection, 'change:active', this.updateModels);			//any other event re-render
-
-			// this.listenTo(EVENTBUS, 'changeImage', this.changeImage);
-			//this.listenTo(EVENTBUS, 'next', this.next);
-			// this.listenTo(EVENTBUS, 'previous', this.previous);
 
 			this.listenTo(EVENTBUS, 'destroyAll', this.destroyAll);
 		},		
@@ -382,32 +387,40 @@ $(function(){
 
 	});
 
+	var album = {};
+	var imagesViewApp = {};
+	var thumbnailsViewApp = {};
+
+
 	var AppRouter = Backbone.Router.extend({
 		routes: {
 			"album/:id"		:"album"	//#album/1
 		},
 
-		album: function(id){
-			EVENTBUS.trigger("destroyAll");
+		album: function(id){					
+			if (!jQuery.isEmptyObject(album)){
+				album.stopListening();
+				EVENTBUS.trigger("destroyAll");
+			}
 
 			console.log("router");
 			console.log(id);
 
-			var album = new Album({
+			album = new Album({
 				id: id
 			});
 
-			album.images.fetch();
+			
 			console.log('album');
 			console.log(album);
 
 
-			var imagesViewApp = new ImagesView({
+			imagesViewApp = new ImagesView({
 				el: $("#image"),
 				collection: album.images
 			});
 
-			var thumbnailsViewApp = new ThumbnailsView({
+			thumbnailsViewApp = new ThumbnailsView({
 				el: $("#thumbnail"),
 				collection: album.images
 			});	
